@@ -18,4 +18,3 @@ void ActorFactory::AddComponentToActor(StrongActorPtr actor, StrongActorComponen
 	component->SetOwner(actor);
 	actor->AddComponent(component);
 }
-

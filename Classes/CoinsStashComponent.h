@@ -7,9 +7,7 @@
 #include "ActorComponent.h"
 #include "PlayerCoinsComponent.h"
 
-/*
-/ Class is responsible for the game logic of the flower actor: stash coins
-*/
+// Class is responsible for the game logic of the flower actor: stash coins
 class CoinsStashComponent : public ActorComponent
 {
 private:

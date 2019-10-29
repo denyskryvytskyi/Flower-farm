@@ -3,8 +3,6 @@
 SnakeComponent::SnakeComponent(int heightMap, int widthMap, int cellSize, int snakeSpeed)
 	:m_HeightMap(heightMap), m_WidthMap(widthMap), m_CellSpriteSize(cellSize), m_SnakeSpeed(snakeSpeed), m_SnakeCellsCount(0)
 {
-	//cocos2d::log("H: %d; D: %d", m_HeightMap, m_WidthMap);
-
 	map = new sCellPosition*[heightMap];
 	for (int i = 0; i < heightMap; i++)
 	{
@@ -72,9 +70,9 @@ void SnakeComponent::SnakeMoving(float dt)
 
 	switch (m_MoveDirection)
 	{
-		case LEFT: ChangeCellsPositions(-m_CellSpriteSize);
+		case LEFT: ChangeCellsPositions(-m_CellSpriteSize, 0);
 			break;
-		case RIGHT:  ChangeCellsPositions(m_CellSpriteSize);
+		case RIGHT:  ChangeCellsPositions(m_CellSpriteSize, 0);
 			break;
 		case UP: ChangeCellsPositions(0, m_CellSpriteSize);
 			break;
@@ -85,7 +83,7 @@ void SnakeComponent::SnakeMoving(float dt)
 	ChangeCellsSpritePositions();
 }
 
-void SnakeComponent::ChangeCellsPositions(int x, int y = 0)
+void SnakeComponent::ChangeCellsPositions(int x, int y)
 {
 	sCellPosition prevCell = m_HeadPosition;
 	m_HeadPosition = { m_HeadPosition.x + x, m_HeadPosition.y + y };

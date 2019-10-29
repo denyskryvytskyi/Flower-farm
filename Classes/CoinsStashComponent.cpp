@@ -42,5 +42,4 @@ void CoinsStashComponent::StashCoin()
 	EventCustom event("Flower stash coin event");
 
 	Director::getInstance()->getEventDispatcher()->dispatchEvent(&event);
-	
 }

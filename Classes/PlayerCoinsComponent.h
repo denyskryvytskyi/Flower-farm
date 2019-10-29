@@ -3,11 +3,10 @@
 
 #include "ActorComponent.h"
 
-/* 
-/ Singleton class
-/ Responsible for the logic of coins: adding and removing coins
-*/
-
+// 
+// Singleton class
+// Responsible for the logic of coins: adding and removing coins
+//
 class PlayerCoinsComponent : public ActorComponent
 {
 	friend class CoinsStashComponent;

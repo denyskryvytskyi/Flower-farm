@@ -9,8 +9,6 @@ class SnakeGenerator : public cocos2d::Node
 private:
 	float m_TimeSnakeGeneration = 5.0f;
 public:
-
-
 	void GenerateSnake(float dt);
 	void VUpdate();
 };

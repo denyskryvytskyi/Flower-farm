@@ -6,12 +6,12 @@
 #include "ActorComponent.h"
 #include "PlayerCoinsComponent.h"
 
-/*
-/ Class is responsible for the logic of the labels: 
-/ - "the number of coins"
-/ - "not enough coins"
-/ - "the end of the game"
-*/
+//
+// Class is responsible for the logic of the labels: 
+// - "the number of coins"
+// - "not enough coins"
+// - "the end of the game"
+//
 class LabelComponent : public ActorComponent
 {
 private:

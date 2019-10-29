@@ -34,11 +34,9 @@ private:
 	const short m_MaxSnakeCellsCount = 5;
 	int m_SnakeSpeed; // Speed of snake without bonus
 	eDirection m_MoveDirection; // Snake moving direction
-
-	/*
-	/ Map for snake moving.
-	/ Consist of squares with size snake's cell
-	*/
+	
+	// Map for snake moving.
+	// consist of squares with size snake's cell
 	const int m_WidthMap;
 	const int m_HeightMap;
 	sCellPosition** map;

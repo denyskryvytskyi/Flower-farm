@@ -6,9 +6,9 @@
 #include "cocos2d.h"
 #include "ActorComponent.h"
 
-/*
-/ Responsible for the sprites of the game object
-*/
+//
+// Responsible for the sprites of the game object
+//
 class SpriteComponent : public ActorComponent
 {
 private:

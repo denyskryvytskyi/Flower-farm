@@ -70,7 +70,6 @@ bool MainScene::init()
 	lableComponent->VUpdate();	
 	this->addChild(lableComponent->GetLabel(), 5);
 
-
 	//// Label not enough coins
 	//m_NotEnoughCoins = Label::createWithSystemFont("Not enough coins!", "Arial", 40);
 	//m_NotEnoughCoins->setPosition(Vec2(designResolutionSize.width / 2, designResolutionSize.height / 2));
@@ -84,56 +83,42 @@ bool MainScene::init()
 
 	// Listeners
 	auto listener = EventListenerMouse::create();
+
 	listener->onMouseDown = [&](cocos2d::Event* event) {
 
-	
-	EventMouse* mouseEvent = dynamic_cast<EventMouse*>(event);
-	if ((int)mouseEvent->getMouseButton() == MouseButtons::Right)
-	{
-		// Если достаточно монет - можно посадить цветочек
-		if (playerCoinsComponent.GetCoinsCount() >= playerCoinsComponent.GetFlowerPrice())
+		EventMouse* mouseEvent = dynamic_cast<EventMouse*>(event);
+		if ((int)mouseEvent->getMouseButton() == MouseButtons::Right)
 		{
-			playerCoinsComponent.RemoveCoins(playerCoinsComponent.GetFlowerPrice());
-			// Flower
-			StrongActorPtr flower(new Actor());
+			// Если достаточно монет - можно посадить цветочек
+			if (playerCoinsComponent.GetCoinsCount() >= playerCoinsComponent.GetFlowerPrice())
+			{
+				playerCoinsComponent.RemoveCoins(playerCoinsComponent.GetFlowerPrice());
+				// Flower
+				StrongActorPtr flower(new Actor());
 
-			int nextComponentId = flower->GetLastComponentId() + 1;
+				int nextComponentId = flower->GetLastComponentId() + 1;
 
-			// Set SpriteComponent
-			auto inf = AutoPolygon::generatePolygon("Chamomile.png");
-			Sprite* spr = Sprite::create(inf);
-			spr->setPosition(mouseEvent->getLocation().x, designResolutionSize.height - mouseEvent->getLocation().y);
-			spr->setAnchorPoint(Vec2(0.5, 0.5));
-			spr->setScale(0.5);
+				// Set SpriteComponent
+				auto inf = AutoPolygon::generatePolygon("Chamomile.png");
+				Sprite* spr = Sprite::create(inf);
+				spr->setPosition(mouseEvent->getLocation().x, designResolutionSize.height - mouseEvent->getLocation().y);
+				spr->setAnchorPoint(Vec2(0.5, 0.5));
+				spr->setScale(0.5);
 
-			std::shared_ptr<SpriteComponent> spriteComponent(new SpriteComponent(nextComponentId, spr));
-			factory.AddComponentToActor(flower, std::static_pointer_cast<ActorComponent>(spriteComponent));
+				std::shared_ptr<SpriteComponent> spriteComponent(new SpriteComponent(nextComponentId, spr));
+				factory.AddComponentToActor(flower, std::static_pointer_cast<ActorComponent>(spriteComponent));
 
-			// Set FlowerComponent
-			nextComponentId = flower->GetLastComponentId() + 1;
-			std::shared_ptr<CoinsStashComponent> flowerComponent(new CoinsStashComponent(nextComponentId, &playerCoinsComponent));
-			factory.AddComponentToActor(flower, std::static_pointer_cast<ActorComponent>(flowerComponent));
-			flowerComponent->VUpdate(); // Stash coins
+				// Set FlowerComponent
+				nextComponentId = flower->GetLastComponentId() + 1;
+				std::shared_ptr<CoinsStashComponent> flowerComponent(new CoinsStashComponent(nextComponentId, &playerCoinsComponent));
+				factory.AddComponentToActor(flower, std::static_pointer_cast<ActorComponent>(flowerComponent));
+				flowerComponent->VUpdate(); // Stash coins
 
-			this->addChild(flower->GetComponent<SpriteComponent>(spriteComponent->VGetComponentId())->VGetSprite(), 0);
+				this->addChild(flower->GetComponent<SpriteComponent>(spriteComponent->VGetComponentId())->VGetSprite(), 0);
+			}
+			m_PlayerCoinsCount = playerCoinsComponent.GetCoinsCount();
 		}
-		m_PlayerCoinsCount = playerCoinsComponent.GetCoinsCount();
-	}
-		
 	};
-
-	//listener->onMouseMove = [](cocos2d::Event* event) {
-	//	// Cast Event to EventMouse for position details like above
-	//	cocos2d::log("Mouse moved event");
-	//};
-
-	//listener->onMouseScroll = [](cocos2d::Event* event) {
-	//	cocos2d::log("Mouse wheel scrolled");
-	//};
-
-	//listener->onMouseUp = [](cocos2d::Event* event) {
-	//	cocos2d::log("Mouse button released");
-	//};
 
 	_eventDispatcher->addEventListenerWithFixedPriority(listener, 1);
 
@@ -146,8 +131,6 @@ bool MainScene::init()
 
 	return true;
 }
-
-
 
 void MainScene::onContactBegin(cocos2d::PhysicsContact &contact)
 {}
@@ -164,5 +147,3 @@ void MainScene::update(float dt)
 	//	m_NotEnoughCoins->setVisible(true);
 	//}
 }
-
-

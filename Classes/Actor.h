@@ -8,10 +8,8 @@ typedef unsigned long ComponentId;
 typedef unsigned long ActorId;
 typedef std::shared_ptr<ActorComponent> StrongActorComponentPtr;
 
-/*
-/ Class for the every game object
-/ Consist of the components depending of game object
-*/
+// Class for the game object
+// consist of the components depending of game object
 class Actor
 {
 	friend class ActorFactory;
