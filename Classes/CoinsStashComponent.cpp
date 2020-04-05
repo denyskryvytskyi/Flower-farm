@@ -23,7 +23,6 @@ void CoinsStashComponent::GenerateCoins(float dt)
 {
 	p_PlayerCoins->AddCoins(m_TimeCoinsGeneration);
 	int c = p_PlayerCoins->GetCoinsCount();
-	cocos2d::log("Added! %d", c);
 }
 
 void CoinsStashComponent::StashCoin()
@@ -33,7 +32,6 @@ void CoinsStashComponent::StashCoin()
 	// Create listener
 	auto listener = EventListenerCustom::create("Flower stash coin event", [=](EventCustom* event) {
 		int coinsCount = 20;
-		cocos2d::log("Coins count: " + coinsCount);
 	});
 	
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener, 2);

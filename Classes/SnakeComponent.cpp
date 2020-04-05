@@ -1,181 +1,186 @@
 #include "SnakeComponent.h"
 
 SnakeComponent::SnakeComponent(int heightMap, int widthMap, int cellSize, int snakeSpeed)
-	:m_HeightMap(heightMap), m_WidthMap(widthMap), m_CellSpriteSize(cellSize), m_SnakeSpeed(snakeSpeed), m_SnakeCellsCount(0)
+    : m_CellSpriteSize(cellSize),
+    m_SnakeSpeed(snakeSpeed),
+    m_SnakeCellsCount(0)
 {
-	map = new sCellPosition*[heightMap];
-	for (int i = 0; i < heightMap; i++)
-	{
-		map[i] = new sCellPosition[widthMap];
-	}
+    m_Map = new Matrix<sCellPosition>(heightMap, widthMap);
 }
 
 SnakeComponent::~SnakeComponent()
-{}
+{
+    delete m_Map;
+    delete m_HeadSprite;
+    for (auto tailSprite : m_TailSprites)
+    {
+        delete tailSprite;
+    }
+    m_TailSprites.clear();
+}
 
 void SnakeComponent::Setup()
 {
-	// Set start settings for the snake
-	// Set head position
-	srand(time(0));
-	int x = 100 + rand() % (m_WidthMap - 100);
-	int y = 100 + rand() % (m_HeightMap - 100);
-	m_HeadPosition = { x, y };
+    srand(time(0));
+    int x = 100 + rand() % (m_Map->rows() - 100);
+    int y = 100 + rand() % (m_Map->cols() - 100);
+    m_HeadPosition = { x, y };
 
-	// Set direction
-	m_MoveDirection = static_cast<eDirection>(rand() % 4);
+    m_MoveDirection = (EDirection)(rand() % 4);
 }
 
 void SnakeComponent::SnakeMoving(float dt)
 {
-	// cocos2d::log("Snake moves");
-	// Change direction
-	eDirection currentDir = m_MoveDirection;
+    const EDirection currentDir = m_MoveDirection;
+    const int boundaryValue = m_CellSpriteSize;
+    bool validDirection = true;
 
-	// Check out if the snake don't move out of the map or towards its tail
-	bool validDirection;
-	int boundaryValue = m_CellSpriteSize;
+    do {
+        m_MoveDirection = static_cast<EDirection>(rand() % 4);
+        validDirection = true;
 
-	do {
-		// Generate random direction
-		m_MoveDirection = static_cast<eDirection>(rand() % 4);
-		validDirection = true;
+        if (m_MoveDirection == EDirection_LEFT)
+        {
+            if (m_HeadPosition.x <= boundaryValue || currentDir == EDirection_RIGHT)
+                validDirection = false;
+        }
+        else if (m_MoveDirection == EDirection_RIGHT)
+        {
+            if (m_HeadPosition.x >= (m_Map->cols() - boundaryValue) || currentDir == EDirection_LEFT)
+                validDirection = false;
+        }
+        else if (m_MoveDirection == EDirection_UP)
+        {
+            if (m_HeadPosition.y >= (m_Map->rows() - boundaryValue) || currentDir == EDirection_DOWN)
+                validDirection = false;
+        }
+        else if (m_MoveDirection == EDirection_DOWN)
+        {
+            if (m_HeadPosition.y <= boundaryValue || currentDir == EDirection_UP)
+                validDirection = false;
+        }
 
-		// Check out generated direction
-		
-		cocos2d::log("y: %d; h: %d", m_HeadPosition.y, m_HeightMap);
-		cocos2d::log("x: %d; w: %d", m_HeadPosition.x, m_WidthMap);
-		if (m_MoveDirection == LEFT)
-		{
-			if(m_HeadPosition.x <= boundaryValue || currentDir == RIGHT)
-				validDirection = false;
-		}
-		else if (m_MoveDirection == RIGHT)
-		{
-			if (m_HeadPosition.x >= (m_WidthMap - boundaryValue) || currentDir == LEFT)
-				validDirection = false;	
-		}
-		else if (m_MoveDirection == UP)
-		{
-			if (m_HeadPosition.y >= (m_HeightMap - boundaryValue) || currentDir == DOWN)
-				validDirection = false;
-		}
-		else if (m_MoveDirection == DOWN)
-		{
-			if(m_HeadPosition.y <= boundaryValue || currentDir == UP)
-				validDirection = false;
-		}
+    } while (m_MoveDirection == currentDir && !validDirection);
 
-	} while (m_MoveDirection == currentDir && !validDirection);
+    switch (m_MoveDirection)
+    {
+    case EDirection_LEFT:
+        ChangeCellsPositions(-m_CellSpriteSize, 0);
+        break;
+    case EDirection_RIGHT:
+        ChangeCellsPositions(m_CellSpriteSize, 0);
+        break;
+    case EDirection_UP:
+        ChangeCellsPositions(0, m_CellSpriteSize);
+        break;
+    case EDirection_DOWN:
+        ChangeCellsPositions(0, -m_CellSpriteSize);
+        break;
+    }
 
-	switch (m_MoveDirection)
-	{
-		case LEFT: ChangeCellsPositions(-m_CellSpriteSize, 0);
-			break;
-		case RIGHT:  ChangeCellsPositions(m_CellSpriteSize, 0);
-			break;
-		case UP: ChangeCellsPositions(0, m_CellSpriteSize);
-			break;
-		case DOWN:  ChangeCellsPositions(0, -m_CellSpriteSize);
-			break;
-	}
-
-	ChangeCellsSpritePositions();
+    ChangeCellsSpritePositions();
 }
 
 void SnakeComponent::ChangeCellsPositions(int x, int y)
 {
-	sCellPosition prevCell = m_HeadPosition;
-	m_HeadPosition = { m_HeadPosition.x + x, m_HeadPosition.y + y };
+    sCellPosition prevCell = m_HeadPosition;
+    m_HeadPosition = { m_HeadPosition.x + x, m_HeadPosition.y + y };
 
-	if (!m_TailCellsPositions.empty())
-	{
-		sCellPosition currentCell;
-		for (int i = 0; i < m_TailCellsPositions.size(); i++)
-		{
-			currentCell = m_TailCellsPositions[i];
-			m_TailCellsPositions[i] = prevCell;
-			prevCell = currentCell;
-		}
-	}
+    if (!m_TailCellsPositions.empty())
+    {
+        sCellPosition currentCell;
+        for (int i = 0; i < m_TailCellsPositions.size(); i++)
+        {
+            currentCell = m_TailCellsPositions[i];
+            m_TailCellsPositions[i] = prevCell;
+            prevCell = currentCell;
+        }
+    }
 }
 
 void SnakeComponent::ChangeCellsSpritePositions()
 {
-	m_HeadSprite->setPosition(m_HeadPosition.x, m_HeadPosition.y);
+    m_HeadSprite->setPosition(m_HeadPosition.x, m_HeadPosition.y);
 
-	if (m_SnakeCellsCount > 1)
-	{
-		for (int i = 0; i < m_TailSprites.size(); i++)
-		{
-			m_TailSprites[i]->setPosition(m_TailCellsPositions[i].x, m_TailCellsPositions[i].y);
-		}
-	}
+    if (m_SnakeCellsCount > 1)
+    {
+        for (int i = 0; i < m_TailSprites.size(); i++)
+        {
+            m_TailSprites[i]->setPosition(m_TailCellsPositions[i].x, m_TailCellsPositions[i].y);
+        }
+    }
 }
 
-void SnakeComponent::SetHeadSprite(cocos2d::Sprite* sprite)
+void SnakeComponent::SetHeadSprite(SpritePtr sprite)
 {
-	m_HeadSprite = sprite;
-	m_HeadSprite->setPosition(m_HeadPosition.x, m_HeadPosition.y);
-	m_SnakeCellsCount++;
-	this->addChild(m_HeadSprite, 10);
+    m_HeadSprite = sprite;
+    m_HeadSprite->setPosition(m_HeadPosition.x, m_HeadPosition.y);
+    m_SnakeCellsCount++;
+    this->addChild(m_HeadSprite, 10);
+}
+
+SpritePtr SnakeComponent::GetHeadSprite()
+{
+    return m_HeadSprite;
 }
 
 void SnakeComponent::AddCell(float dt)
 {
-	//cocos2d::log("Add cell");
-	cocos2d::log("Cells: %d", m_SnakeCellsCount);
-	if (m_SnakeCellsCount < m_MaxSnakeCellsCount)
-	{
-		m_SnakeCellsCount++;
-		cocos2d::Sprite* newCell = cocos2d::Sprite::createWithSpriteFrame(m_HeadSprite->getSpriteFrame());
-		newCell->setScale(0.5);
+    if (m_SnakeCellsCount < m_MaxSnakeCellsCount)
+    {
+        m_SnakeCellsCount++;
+        SpritePtr newCell =cocos2d::Sprite::createWithSpriteFrame(m_HeadSprite->getSpriteFrame());
+        newCell->setScale(0.5);
 
-		// Add physics for new cells
-		auto physicsBody = cocos2d::PhysicsBody::createBox(cocos2d::Size(32.0f, 32.0f), cocos2d::PhysicsMaterial(0.1f, 1.0f, 0.0f));
-		physicsBody->setDynamic(false);
-		// sprite will use physicsBody
-		newCell->addComponent(physicsBody);
+        auto physicsBody = cocos2d::PhysicsBody::createBox(cocos2d::Size(32.0f, 32.0f), cocos2d::PhysicsMaterial(0.1f, 1.0f, 0.0f));
+        physicsBody->setDynamic(false);
 
-		m_TailSprites.push_back(newCell);
-		
-		sCellPosition lastCellPos;
-		sCellPosition newCellPos;
+        newCell->addComponent(physicsBody);
 
-		// If tail has cells get position of the last one
-		if (!m_TailCellsPositions.empty())
-		{
-			lastCellPos = m_TailCellsPositions.back();
-		}
-		// If not - last cell position - snake's head position
-		else 
-		{
-			lastCellPos = m_HeadPosition;
-		}
+        m_TailSprites.push_back(newCell);
 
-		// According  to direction add new cell to the tail's end
-		switch (m_MoveDirection)
-		{
-		case LEFT: newCellPos = { lastCellPos.x + m_CellSpriteSize, lastCellPos.y };
-			break;
-		case RIGHT: newCellPos = { lastCellPos.x - m_CellSpriteSize, lastCellPos.y };
-			break;
-		case UP: newCellPos = { lastCellPos.x, lastCellPos.y - m_CellSpriteSize };
-			break;
-		case DOWN:  newCellPos = { lastCellPos.x, lastCellPos.y + m_CellSpriteSize };
-			break;
-		}
+        sCellPosition lastCellPos;
+        sCellPosition newCellPos;
 
-		m_TailCellsPositions.push_back(newCellPos);
-		m_TailSprites.back()->setPosition(newCellPos.x, newCellPos.y);
+        if (!m_TailCellsPositions.empty())
+        {
+            lastCellPos = m_TailCellsPositions.back();
+        }
+        else
+        {
+            lastCellPos = m_HeadPosition;
+        }
 
-		this->addChild(newCell, 10);
-	}
+        switch (m_MoveDirection)
+        {
+        case EDirection_LEFT:
+            newCellPos = { lastCellPos.x + m_CellSpriteSize, lastCellPos.y };
+            break;
+        case EDirection_RIGHT:
+            newCellPos = { lastCellPos.x - m_CellSpriteSize, lastCellPos.y };
+            break;
+        case EDirection_UP:
+            newCellPos = { lastCellPos.x, lastCellPos.y - m_CellSpriteSize };
+            break;
+        case EDirection_DOWN:
+            newCellPos = { lastCellPos.x, lastCellPos.y + m_CellSpriteSize };
+            break;
+        }
+
+        m_TailCellsPositions.push_back(newCellPos);
+        m_TailSprites.back()->setPosition(newCellPos.x, newCellPos.y);
+
+        this->addChild(newCell, 10);
+    }
 }
 
 void SnakeComponent::VUpdate()
 {
-	// Moving while snake has at least one cell
-	cocos2d::Director::sharedDirector()->getScheduler()->schedule(CC_SCHEDULE_SELECTOR(SnakeComponent::SnakeMoving), this, 1.0f/m_SnakeSpeed, false);
-	cocos2d::Director::sharedDirector()->getScheduler()->schedule(CC_SCHEDULE_SELECTOR(SnakeComponent::AddCell), this, 3.0f, false);
+    cocos2d::Director::sharedDirector()->getScheduler()->schedule(CC_SCHEDULE_SELECTOR(SnakeComponent::SnakeMoving), this, 1.0f / m_SnakeSpeed, false);
+    cocos2d::Director::sharedDirector()->getScheduler()->schedule(CC_SCHEDULE_SELECTOR(SnakeComponent::AddCell), this, 3.0f, false);
+}
+
+ComponentId SnakeComponent::VGetComponentId(void) const
+{
+    return m_SnakeId;
 }

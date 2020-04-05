@@ -171,6 +171,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\CoinsStashComponent.h" />
     <ClInclude Include="..\Classes\LabelComponent.h" />
     <ClInclude Include="..\Classes\MainScene.h" />
+    <ClInclude Include="..\Classes\Matrix.h" />
     <ClInclude Include="..\Classes\PlayerCoinsComponent.h" />
     <ClInclude Include="..\Classes\ResolutionManager.h" />
     <ClInclude Include="..\Classes\SnakeComponent.h" />

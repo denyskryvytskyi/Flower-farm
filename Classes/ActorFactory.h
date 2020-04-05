@@ -7,16 +7,17 @@
 
 typedef std::shared_ptr<Actor> StrongActorPtr;
 
-// Class for creating actors and adding components to actor
 class ActorFactory
 {
-	ActorId m_LastActorId;
+    ActorId m_LastActorId;
+
 public:
-	ActorFactory(void);
-	StrongActorPtr CreateActor();
-	void AddComponentToActor(StrongActorPtr acto, StrongActorComponentPtr component);
+    ActorFactory(void);
+    StrongActorPtr CreateActor();
+    void AddComponentToActor(StrongActorPtr acto, StrongActorComponentPtr component);
+
 private:
-	ActorId GetNextActorId(void) { ++m_LastActorId; return m_LastActorId; }
+    ActorId GetNextActorId(void);
 };
 
-#endif // __ACTOR_FACTORY_H__
+#endif // !__ACTOR_FACTORY_H__
