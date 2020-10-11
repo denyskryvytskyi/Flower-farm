@@ -21,19 +21,6 @@
 .metadata/
 .recommenders/
 
-# proj.android-studio
-.idea/
-*.iml
-/proj.android-studio/app/assets/
-/proj.android-studio/app/obj/
-/proj.android-studio/app/libs/armeabi/
-/proj.android-studio/app/libs/armeabi-v7a/
-/proj.android-studio/app/libs/x86/
-/proj.android-studio/app/gradle.properties
-/proj.android-studio/app/local.properties
-/proj.android-studio/*/build/
-/cocos2d/cocos/platform/android/libcocos2dx/build/
-/cocos2d/cocos/platform/android/java/libs/gps/build/
 
 # proj.ios_mac
 /cocos2d/build/build/
